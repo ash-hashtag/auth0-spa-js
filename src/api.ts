@@ -36,7 +36,7 @@ export async function oauthToken(
 
   const isDpopSupported = dpopUtils.isGrantTypeSupported(options.grant_type);
 
-  return await getJSON<TokenEndpointResponse>(
+  const result = await getJSON<TokenEndpointResponse>(
     `${baseUrl}/oauth/token`,
     timeout,
     audience || DEFAULT_AUDIENCE,
@@ -58,4 +58,8 @@ export async function oauthToken(
     useMrrt,
     isDpopSupported ? dpop : undefined
   );
+
+  console.log(`oauthtoken::getJSON ${JSON.stringify(result)}`);
+
+  return result;
 }

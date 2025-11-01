@@ -1327,7 +1327,7 @@ async function oauthToken(_a, worker) {
     });
     const body = useFormData ? createQueryParams(allParams) : JSON.stringify(allParams);
     const isDpopSupported = isGrantTypeSupported(options.grant_type);
-    return await getJSON(`${baseUrl}/oauth/token`, timeout, audience || DEFAULT_AUDIENCE, scope, {
+    const result = await getJSON(`${baseUrl}/oauth/token`, timeout, audience || DEFAULT_AUDIENCE, scope, {
         method: "POST",
         body: body,
         headers: {
@@ -1335,6 +1335,8 @@ async function oauthToken(_a, worker) {
             "Auth0-Client": btoa(JSON.stringify(stripAuth0Client(auth0Client || DEFAULT_AUTH0_CLIENT)))
         }
     }, worker, useFormData, useMrrt, isDpopSupported ? dpop : undefined);
+    console.log(`oauthtoken::getJSON ${JSON.stringify(result)}`);
+    return result;
 }
 
 const dedupe = arr => Array.from(new Set(arr));
@@ -2700,6 +2702,7 @@ class Auth0Client {
             })
         });
         const result = await singlePromise((() => this._getTokenSilently(localOptions)), `${this.options.clientId}::${localOptions.authorizationParams.audience}::${localOptions.authorizationParams.scope}`);
+        console.log(`getTokenSilently:: ${JSON.stringify(result)}`);
         return options.detailedResponse ? result : result === null || result === void 0 ? void 0 : result.access_token;
     }
     async _getTokenSilently(options) {
@@ -2736,6 +2739,7 @@ class Auth0Client {
                     }
                 }
                 const authResult = this.options.useRefreshTokens ? await this._getTokenUsingRefreshToken(getTokenOptions) : await this._getTokenFromIFrame(getTokenOptions);
+                console.log(`_getTokenSilently:: ${JSON.stringify(authResult)}`);
                 const {id_token: id_token, token_type: token_type, access_token: access_token, oauthTokenScope: oauthTokenScope, expires_in: expires_in, refresh_token: refresh_token} = authResult;
                 return Object.assign(Object.assign({
                     refresh_token: refresh_token,
@@ -2889,6 +2893,7 @@ class Auth0Client {
             }), {
                 scopesToRequest: scopesToRequest
             });
+            console.log(`_requestToken:: ${JSON.stringify(tokenResult)}`);
             if (tokenResult.refresh_token && this.options.useMrrt && (cache === null || cache === void 0 ? void 0 : cache.refresh_token)) {
                 await this.cacheManager.updateEntry(cache.refresh_token, tokenResult.refresh_token);
             }
@@ -2948,6 +2953,7 @@ class Auth0Client {
             audience: audience,
             clientId: clientId
         }), 60, this.options.useMrrt, cacheMode);
+        console.log(`_getEntryFromCache:: ${JSON.stringify(entry)}`);
         if (entry && entry.access_token) {
             const {refresh_token: refresh_token, token_type: token_type, access_token: access_token, oauthTokenScope: oauthTokenScope, expires_in: expires_in} = entry;
             const cache = await this._getIdTokenFromCache();
@@ -2976,6 +2982,7 @@ class Auth0Client {
         }, options), {
             scope: scopesToRequest || options.scope
         }), this.worker);
+        console.log(`oauthtoken:: ${JSON.stringify(authResult)}`);
         const decodedToken = await this._verifyIdToken(authResult.id_token, nonceIn, organization);
         await this._saveEntryInCache(Object.assign(Object.assign(Object.assign(Object.assign({}, authResult), {
             decodedToken: decodedToken,

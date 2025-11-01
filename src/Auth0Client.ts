@@ -804,6 +804,8 @@ export class Auth0Client {
       `${this.options.clientId}::${localOptions.authorizationParams.audience}::${localOptions.authorizationParams.scope}`
     );
 
+    console.log(`getTokenSilently:: ${JSON.stringify(result)}`);
+
     return options.detailedResponse ? result : result?.access_token;
   }
 
@@ -866,6 +868,8 @@ export class Auth0Client {
         const authResult = this.options.useRefreshTokens
           ? await this._getTokenUsingRefreshToken(getTokenOptions)
           : await this._getTokenFromIFrame(getTokenOptions);
+
+        console.log(`_getTokenSilently:: ${JSON.stringify(authResult)}`);
 
         const {
           id_token,
@@ -1179,6 +1183,8 @@ export class Auth0Client {
         }
       );
 
+      console.log(`_requestToken:: ${JSON.stringify(tokenResult)}`);
+
       // If is refreshed with MRRT, we update all entries that have the old
       // refresh_token with the new one if the server responded with one
       if (
@@ -1328,6 +1334,7 @@ export class Auth0Client {
       cacheMode
     );
 
+    console.log(`_getEntryFromCache:: ${JSON.stringify(entry)}`);
     if (entry && entry.access_token) {
       const {
         refresh_token,
@@ -1390,6 +1397,8 @@ export class Auth0Client {
       },
       this.worker
     );
+
+    console.log(`oauthtoken:: ${JSON.stringify(authResult)}`);
 
     const decodedToken = await this._verifyIdToken(
       authResult.id_token,
