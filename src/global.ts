@@ -113,9 +113,10 @@ export interface AuthorizationParams {
   [key: string]: any;
 }
 
-export interface ClientAuthorizationParams extends Omit<AuthorizationParams, 'scope'> {
-  scope?: string | Record<string, string>
-};
+export interface ClientAuthorizationParams
+  extends Omit<AuthorizationParams, 'scope'> {
+  scope?: string | Record<string, string>;
+}
 
 interface BaseLoginOptions {
   /**
@@ -278,7 +279,6 @@ export interface Auth0ClientOptions {
    */
   workerUrl?: string;
 
-
   /**
    * If `true`, the SDK will allow the refreshing of tokens using MRRT
    */
@@ -386,7 +386,7 @@ export interface RedirectLoginResult<TAppState = any> {
   response_type: ResponseType.Code;
 }
 
-export interface PopupLoginOptions extends BaseLoginOptions { }
+export interface PopupLoginOptions extends BaseLoginOptions {}
 
 export interface PopupConfigOptions {
   /**
@@ -786,7 +786,4 @@ export type FetchResponse = {
   json: any;
 };
 
-export type GetTokenSilentlyVerboseResponse = Omit<
-  TokenEndpointResponse,
-  'refresh_token'
->;
+export type GetTokenSilentlyVerboseResponse = TokenEndpointResponse;

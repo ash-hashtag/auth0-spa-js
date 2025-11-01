@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["ES2019.Object", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "lib": [
+      "ES2019",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": true,
@@ -15,7 +20,11 @@
     "strictBindCallApply": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
+    "strictPropertyInitialization": true
   },
-  "exclude": ["./__tests__", "./dist/typings", "**/__mocks__/**"]
+  "exclude": [
+    "./__tests__",
+    "./dist/typings",
+    "**/__mocks__/**"
+  ]
 }
