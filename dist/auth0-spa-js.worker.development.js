@@ -137,7 +137,6 @@
                     updateRefreshTokens(refreshToken, json.refresh_token);
                 }
                 setRefreshToken(json.refresh_token, audience, scope);
-                delete json.refresh_token;
             } else {
                 deleteRefreshToken(audience, scope);
             }
