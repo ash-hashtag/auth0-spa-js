@@ -31,7 +31,11 @@ import {
   DecodedToken
 } from './cache';
 
-import { ConnectAccountTransaction, LoginTransaction, TransactionManager } from './transaction-manager';
+import {
+  ConnectAccountTransaction,
+  LoginTransaction,
+  TransactionManager
+} from './transaction-manager';
 import { verify as verifyIdToken } from './jwt';
 import {
   AuthenticationError,
@@ -84,7 +88,7 @@ import {
   ConnectAccountRedirectResult,
   RedirectConnectAccountOptions,
   ResponseType,
-  ClientAuthorizationParams,
+  ClientAuthorizationParams
 } from './global';
 
 // @ts-ignore
@@ -145,7 +149,7 @@ export class Auth0Client {
   private readonly nowProvider: () => number | Promise<number>;
   private readonly httpTimeoutMs: number;
   private readonly options: Auth0ClientOptions & {
-    authorizationParams: ClientAuthorizationParams,
+    authorizationParams: ClientAuthorizationParams;
   };
   private readonly userCache: ICache = new InMemoryCache().enclosedCache;
   private readonly myAccountApi: MyAccountApiClient;
@@ -354,8 +358,8 @@ export class Auth0Client {
       nonce,
       code_challenge,
       authorizationParams.redirect_uri ||
-      this.options.authorizationParams.redirect_uri ||
-      fallbackRedirectUri,
+        this.options.authorizationParams.redirect_uri ||
+        fallbackRedirectUri,
       authorizeOptions?.response_mode,
       thumbprint
     );
@@ -672,7 +676,7 @@ export class Auth0Client {
     return {
       ...data,
       appState: transaction.appState,
-      response_type: ResponseType.ConnectCode,
+      response_type: ResponseType.ConnectCode
     };
   }
 
@@ -718,7 +722,7 @@ export class Auth0Client {
 
     try {
       await this.getTokenSilently(options);
-    } catch (_) { }
+    } catch (_) {}
   }
 
   /**
@@ -789,7 +793,8 @@ export class Auth0Client {
         scope: scopesToRequest(
           this.scope,
           options.authorizationParams?.scope,
-          options.authorizationParams?.audience || this.options.authorizationParams.audience,
+          options.authorizationParams?.audience ||
+            this.options.authorizationParams.audience
         )
       }
     };
@@ -814,9 +819,10 @@ export class Auth0Client {
     if (cacheMode !== 'off') {
       const entry = await this._getEntryFromCache({
         scope: getTokenOptions.authorizationParams.scope,
-        audience: getTokenOptions.authorizationParams.audience || DEFAULT_AUDIENCE,
+        audience:
+          getTokenOptions.authorizationParams.audience || DEFAULT_AUDIENCE,
         clientId: this.options.clientId,
-        cacheMode,
+        cacheMode
       });
 
       if (entry) {
@@ -847,7 +853,8 @@ export class Auth0Client {
         if (cacheMode !== 'off') {
           const entry = await this._getEntryFromCache({
             scope: getTokenOptions.authorizationParams.scope,
-            audience: getTokenOptions.authorizationParams.audience || DEFAULT_AUDIENCE,
+            audience:
+              getTokenOptions.authorizationParams.audience || DEFAULT_AUDIENCE,
             clientId: this.options.clientId
           });
 
@@ -865,10 +872,12 @@ export class Auth0Client {
           token_type,
           access_token,
           oauthTokenScope,
-          expires_in
+          expires_in,
+          refresh_token
         } = authResult;
 
         return {
+          refresh_token,
           id_token,
           token_type,
           access_token,
@@ -912,7 +921,8 @@ export class Auth0Client {
         scope: scopesToRequest(
           this.scope,
           options.authorizationParams?.scope,
-          options.authorizationParams?.audience || this.options.authorizationParams.audience
+          options.authorizationParams?.audience ||
+            this.options.authorizationParams.audience
         )
       }
     };
@@ -1152,25 +1162,30 @@ export class Auth0Client {
       this.options.useMrrt,
       options.authorizationParams,
       cache?.audience,
-      cache?.scope,
+      cache?.scope
     );
 
     try {
-      const tokenResult = await this._requestToken({
-        ...options.authorizationParams,
-        grant_type: 'refresh_token',
-        refresh_token: cache && cache.refresh_token,
-        redirect_uri,
-        ...(timeout && { timeout })
-      },
+      const tokenResult = await this._requestToken(
         {
-          scopesToRequest,
+          ...options.authorizationParams,
+          grant_type: 'refresh_token',
+          refresh_token: cache && cache.refresh_token,
+          redirect_uri,
+          ...(timeout && { timeout })
+        },
+        {
+          scopesToRequest
         }
       );
 
       // If is refreshed with MRRT, we update all entries that have the old
       // refresh_token with the new one if the server responded with one
-      if (tokenResult.refresh_token && this.options.useMrrt && cache?.refresh_token) {
+      if (
+        tokenResult.refresh_token &&
+        this.options.useMrrt &&
+        cache?.refresh_token
+      ) {
         await this.cacheManager.updateEntry(
           cache.refresh_token,
           tokenResult.refresh_token
@@ -1186,13 +1201,13 @@ export class Auth0Client {
           cache?.audience,
           cache?.scope,
           options.authorizationParams.audience,
-          options.authorizationParams.scope,
+          options.authorizationParams.scope
         );
 
         if (isRefreshMrrt) {
           const tokenHasAllScopes = allScopesAreIncluded(
             scopesToRequest,
-            tokenResult.scope,
+            tokenResult.scope
           );
 
           if (!tokenHasAllScopes) {
@@ -1205,17 +1220,17 @@ export class Auth0Client {
             await this.cacheManager.remove(
               this.options.clientId,
               options.authorizationParams.audience,
-              options.authorizationParams.scope,
+              options.authorizationParams.scope
             );
 
             const missingScopes = getMissingScopes(
               scopesToRequest,
-              tokenResult.scope,
+              tokenResult.scope
             );
 
             throw new MissingScopesError(
               options.authorizationParams.audience || 'default',
-              missingScopes,
+              missingScopes
             );
           }
         }
@@ -1265,14 +1280,15 @@ export class Auth0Client {
   }
 
   private async _getIdTokenFromCache() {
-    const audience = this.options.authorizationParams.audience || DEFAULT_AUDIENCE;
+    const audience =
+      this.options.authorizationParams.audience || DEFAULT_AUDIENCE;
     const scope = this.scope[audience];
 
     const cache = await this.cacheManager.getIdToken(
       new CacheKey({
         clientId: this.options.clientId,
         audience,
-        scope,
+        scope
       })
     );
 
@@ -1294,7 +1310,7 @@ export class Auth0Client {
     scope,
     audience,
     clientId,
-    cacheMode,
+    cacheMode
   }: {
     scope: string;
     audience: string;
@@ -1309,15 +1325,21 @@ export class Auth0Client {
       }),
       60, // get a new token if within 60 seconds of expiring
       this.options.useMrrt,
-      cacheMode,
+      cacheMode
     );
 
     if (entry && entry.access_token) {
-      const { token_type, access_token, oauthTokenScope, expires_in } =
-        entry as CacheEntry;
+      const {
+        refresh_token,
+        token_type,
+        access_token,
+        oauthTokenScope,
+        expires_in
+      } = entry as CacheEntry;
       const cache = await this._getIdTokenFromCache();
       return (
         cache && {
+          refresh_token,
           id_token: cache.id_token,
           token_type: token_type ? token_type : 'Bearer',
           access_token,
@@ -1352,7 +1374,8 @@ export class Auth0Client {
       | TokenExchangeRequestOptions,
     additionalParameters?: RequestTokenAdditionalParameters
   ) {
-    const { nonceIn, organization, scopesToRequest } = additionalParameters || {};
+    const { nonceIn, organization, scopesToRequest } =
+      additionalParameters || {};
     const authResult = await oauthToken(
       {
         baseUrl: this.domainUrl,
@@ -1363,7 +1386,7 @@ export class Auth0Client {
         useMrrt: this.options.useMrrt,
         dpop: this.dpop,
         ...options,
-        scope: scopesToRequest || options.scope,
+        scope: scopesToRequest || options.scope
       },
       this.worker
     );
@@ -1568,7 +1591,7 @@ export class Auth0Client {
       connection,
       authorization_params,
       redirectUri = this.options.authorizationParams.redirect_uri ||
-      window.location.origin
+        window.location.origin
     } = options;
 
     if (!connection) {

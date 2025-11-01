@@ -2736,8 +2736,9 @@ class Auth0Client {
                     }
                 }
                 const authResult = this.options.useRefreshTokens ? await this._getTokenUsingRefreshToken(getTokenOptions) : await this._getTokenFromIFrame(getTokenOptions);
-                const {id_token: id_token, token_type: token_type, access_token: access_token, oauthTokenScope: oauthTokenScope, expires_in: expires_in} = authResult;
+                const {id_token: id_token, token_type: token_type, access_token: access_token, oauthTokenScope: oauthTokenScope, expires_in: expires_in, refresh_token: refresh_token} = authResult;
                 return Object.assign(Object.assign({
+                    refresh_token: refresh_token,
                     id_token: id_token,
                     token_type: token_type,
                     access_token: access_token
@@ -2948,9 +2949,10 @@ class Auth0Client {
             clientId: clientId
         }), 60, this.options.useMrrt, cacheMode);
         if (entry && entry.access_token) {
-            const {token_type: token_type, access_token: access_token, oauthTokenScope: oauthTokenScope, expires_in: expires_in} = entry;
+            const {refresh_token: refresh_token, token_type: token_type, access_token: access_token, oauthTokenScope: oauthTokenScope, expires_in: expires_in} = entry;
             const cache = await this._getIdTokenFromCache();
             return cache && Object.assign(Object.assign({
+                refresh_token: refresh_token,
                 id_token: cache.id_token,
                 token_type: token_type ? token_type : "Bearer",
                 access_token: access_token
