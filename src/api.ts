@@ -59,7 +59,5 @@ export async function oauthToken(
     isDpopSupported ? dpop : undefined
   );
 
-  console.log(`oauthtoken::getJSON ${JSON.stringify(result)}`);
-
   return result;
 }
